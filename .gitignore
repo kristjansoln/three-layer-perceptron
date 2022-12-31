@@ -130,3 +130,5 @@ dmypy.json
 
 # IDE settings
 .idea
+/data/isolet1+2+3+4.data
+/data/isolet5.data
