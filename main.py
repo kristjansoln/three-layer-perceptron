@@ -1,7 +1,6 @@
 """
-A program to demonstrate a three layer perceptron and backpropagation.
+"A program that demonstrates backpropagation and how it is used in a multilayer perceptron."
 
-Author:
 Kristjan Šoln
 """
 import network
