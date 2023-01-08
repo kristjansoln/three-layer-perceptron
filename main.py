@@ -8,8 +8,6 @@ import csv
 import itertools
 import time
 
-from tqdm import tqdm
-
 import network
 import numpy as np
 
@@ -88,10 +86,10 @@ def task2():
 
 def parameter_sweep():
     # Define parameter range
-    epochs = 6  #500
+    epochs = 300  # 500
     layers_range = [3, 4]
-    width_range = [10, 30, 50]
-    beta_range = [0.1, 1, 2]
+    width_range = [10, 30, 80]
+    beta_range = [0.5, 1, 2]
 
     # Preparing the train dataset
     with open("data/isolet1+2+3+4.data", "r") as f:

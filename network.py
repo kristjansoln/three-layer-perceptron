@@ -116,7 +116,7 @@ class Perceptron(object):
             train_time = round((time.time() - train_time), 0)
 
             # Print out current epoch, calculate both accuracies.
-            # NOTE: This has been reduced to once every 5 epochs as the assesements take almost as long as
+            # NOTE: This has been reduced to once every 5 epochs as the assessments take almost as long as
             # the actual epoch of training
             if epoch_index % 5 == 0:
                 assessment_time = time.time()
@@ -126,7 +126,7 @@ class Perceptron(object):
                 else:
                     self.validation_accuracy.append(-1)
                 assessment_time = round((time.time() - assessment_time), 0)
-                print("Epoch: %d/%d, epoch training time[s]: %.0f, assesement_time[s]: %.0f, training accuracy: %.4f, "
+                print("Epoch: %d/%d, epoch training time[s]: %.0f, assessment_time[s]: %.0f, training accuracy: %.4f, "
                       "validation accuracy: %.4f" % (epoch_index, epoch_num, train_time, assessment_time,
                                                      self.training_accuracy[-1],
                                                     self.validation_accuracy[-1]))
