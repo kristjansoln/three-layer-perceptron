@@ -5,7 +5,7 @@ This module implements gradient descent backpropagation and a multilayer percept
 
 Kristjan Šoln
 """
-
+import time
 import numpy as np
 import random
 
@@ -38,7 +38,9 @@ class Perceptron(object):
         self.input_layer_size = None
         self.output_layer_size = None
 
-    def feedforward(self, input_array):  # TODO: TEST ME!
+
+
+    def feedforward(self, input_array):
         """Calculate the output of the network based on a certain input."""
         # input layer value assignment
         if len(input_array) != len(self.layers[0]):
@@ -56,8 +58,12 @@ class Perceptron(object):
 
         return self.layers[-1]
 
-    def train(self, X_input, y_input, epoch_num, batch_size, beta):
+    def train(self, X_input=None, y_input=None, epoch_num=500, batch_size=128, beta=0.5, X_test=None, y_test=None):
         """Train the network"""
+        if X_input is None:
+            raise Exception("Empty X input array")
+        if y_input is None:
+            raise Exception("Empty y input array")
         if len(X_input) != len(y_input):
             raise Exception("Data and label array length do not match.")
         if epoch_num < 1:
@@ -72,18 +78,23 @@ class Perceptron(object):
         data_original = list(zip(X_input, y_input))
         data = random.sample(data_original, len(data_original))
 
+        # Prepare validation data
+        if X_test is not None and y_test is not None:
+            data_original = list(zip(X_test, y_test))
+            data_test = random.sample(data_original, len(data_original))
+        else:
+            data_test = None
+
+        del data_original
+
         # Divide training data into batches
         batches = list(divide_into_batches(data, batch_size))
 
         # Main training loop
-        print("Training")
         for epoch_index in range(epoch_num):
-            # Print out current epoch, calculate accuracy
-            # NOTE: If get_accuracy won't get along well with large
-            # datasets, make it do the evaluation on a smaller amount of data
-            print("Epoch: %d/%d, accuracy: %.4f" % (epoch_index, epoch_num, self.get_accuracy(data)))
-            for batch in batches:
+            train_time = time.time()
 
+            for batch in batches:
                 # Define empty nabla_w and nabla_b arrays of the correct dimensions (copied from the __init__ function)
                 nabla_b = []
                 for layer_size in self.sizes[1:]:
@@ -99,6 +110,26 @@ class Perceptron(object):
 
                 # Correct weights and biases according to nabla
                 self.correct_weights(nabla_b, nabla_w, beta, len(batch))
+
+            train_time = round((time.time() - train_time), 0)
+
+            # Print out current epoch, calculate both accuracies.
+            # NOTE: This has been reduced to once every 5 epochs as the assessments take almost as long as
+            # the actual epoch of training
+            if epoch_index % 5 == 0:
+                assessment_time = time.time()
+                self.training_accuracy.append(self.get_accuracy(data))
+                if data_test is not None:
+                    self.validation_accuracy.append(self.get_accuracy(data_test))
+                else:
+                    self.validation_accuracy.append(-1)
+                assessment_time = round((time.time() - assessment_time), 0)
+                print("Epoch: %d/%d, epoch training time[s]: %.0f, assessment_time[s]: %.0f, training accuracy: %.4f, "
+                      "validation accuracy: %.4f" % (epoch_index, epoch_num, train_time, assessment_time,
+                                                     self.training_accuracy[-1],
+                                                    self.validation_accuracy[-1]))
+            else:
+                print("Epoch: %d/%d, epoch training time[s]: %.0f" % (epoch_index, epoch_num, train_time))
 
     def get_accuracy(self, data):
         """Return the accuracy of the network for a set of data.
@@ -191,3 +222,4 @@ def divide_into_batches(data, batch_size):
     """Yield successive batch_size-sized chunks from data"""
     for i in range(0, len(data), batch_size):
         yield data[i:i + batch_size]
+
